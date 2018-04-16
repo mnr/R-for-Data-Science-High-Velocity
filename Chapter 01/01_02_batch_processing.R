@@ -6,7 +6,6 @@
 # Description: R Programming in Data Science: High Velocity Data 
 
 # an example of batch processing high velocity data
-
  
 # Setup -------------------------------------------------------------------
 library(lubridate)
@@ -38,12 +37,11 @@ collectOneSecond <- function() {
 oneSecondOfData <- collectOneSecond()
 
 # Process -----------------------------------------------------------------
-
+# do something with the data
+meanResult <- mean(oneSecondOfData$V3, na.rm = TRUE)
 
 # Present -----------------------------------------------------------------
-
-
-# Clean up ----------------------------------------------------------------
+print(paste("The Arithmetic Mean of V3 is ", meanResult))
 
 
 
