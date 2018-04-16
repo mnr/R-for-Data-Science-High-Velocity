@@ -9,22 +9,33 @@
 
  
 # Setup -------------------------------------------------------------------
-setupForWindows <- function() {
-  file.copy("sample_iostat.txt", "iostat.txt")
-}
-
-setupForMacUnix <- function() {
-  system("iostat -c 2000 > iostat.txt", wait = FALSE)
-}
-
-switch(.Platform$OS.type,
-        "unix" = setupForMacUnix(),
-        "win" = setupForWindows()
-        )
-        
+library(lubridate)
+HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the simulation file
 
 # Acquire -----------------------------------------------------------------
+# grab one second worth of data
 
+collectOneSecond <- function() {
+  oneSecData <- data.frame("V1" = NA,
+                                "V2" = NA,
+                                "V3" = NA)
+  
+  amountOfRunTime <- now() + seconds(1)
+  
+  while (amountOfRunTime > now()) {
+    newData <-
+      tryCatch(
+        read.table(HighVelSimTxt),
+        error = function(e)
+          NULL
+      )
+    oneSecData <- rbind(oneSecData, newData)
+  }
+  
+  return(oneSecData)
+}
+
+oneSecondOfData <- collectOneSecond()
 
 # Process -----------------------------------------------------------------
 
