@@ -8,30 +8,33 @@
 # an example of Real Time processing high velocity data
  
 # Setup -------------------------------------------------------------------
-library(lubridate)
-HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the simulation file
 
-cumulativeData <- data.frame("V1" = NA,
-                             "V2" = NA,
-                             "V3" = NA)
+# import necessary libraries
+list.of.packages <- c("DBI","RSQLite", "rjson")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if ( length(new.packages) ) install.packages(new.packages)
 
-while (TRUE) {
-  # Acquire -----------------------------------------------------------------
-  # grab unprocessed data
-  
-  cumulativeData <- read.table(HighVelSimTxt)
-  
-  # Process -----------------------------------------------------------------
-  # do something with the data
-  meanResult <- mean(cumulativeData$V3, na.rm = TRUE)
-  
-  # Present -----------------------------------------------------------------
-  flush.console()
-  cat(sprintf("With %d observations, the mean of V3 is %.3f",
-         nrow(cumulativeData),
-         meanResult),
-      "\r"
-  )
+# SQLite support
+library(DBI)
+library(RSQLite)
+library(rjson)
 
-}
+mySQLiteDB <- dbConnect(RSQLite::SQLite(), "AcquisitionDB.SQLite")
 
+# processing --------------------------------------------------------------
+doThisSQL <- " SELECT avg(V3), max(V1) FROM 'Acquired Data' "
+
+dataRead <- dbGetQuery(mySQLiteDB, doThisSQL)
+
+JSON_representation <- toJSON( dataRead )
+
+write(JSON_representation, file = "meanOfV3.json")
+
+doThisSQL <- " DELETE FROM 'Acquired Data' WHERE V3 < :maxRow "
+myDBIResult <- dbSendQuery(mySQLiteDB, doThisSQL )
+dbBind(myDBIResult, list( maxRow = dataRead[[2]] ) )
+dbFetch(myDBIResult)
+
+# Clean up ----------------------------------------------------------------
+
+dbDisconnect(mySQLiteDB)
