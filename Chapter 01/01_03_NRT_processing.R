@@ -27,9 +27,11 @@ while (TRUE) {
   
   # Present -----------------------------------------------------------------
   flush.console()
-  sprintf("With %s observations, the mean of V3 is %.3f",
-         cumulativeData$V1,
-         meanResult)
+  cat(sprintf("With %d observations, the mean of V3 is %.3f",
+         nrow(cumulativeData),
+         meanResult),
+      "\r"
+  )
 
 }
 
