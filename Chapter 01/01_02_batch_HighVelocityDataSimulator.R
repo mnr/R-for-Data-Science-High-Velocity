@@ -7,7 +7,7 @@
 
 # A program that simulates high velocity data
 # 1) change working directory to Chapter 01 of your exercise folder
-# 2) start this program with "rscript HighVelocityDataSimulator.R"
+# 2) start this program with "rscript 01_02_batch_HighVelocityDataSimulator.R"
 
 rowcounter <- 0
 
