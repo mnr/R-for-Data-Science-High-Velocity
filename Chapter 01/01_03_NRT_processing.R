@@ -5,7 +5,7 @@
 # More Learning: http://niemannross.com/link/mnratlil
 # Description: R Programming in Data Science: High Velocity Data 
 
-# an example of batch processing high velocity data
+# an example of NRT processing high velocity data
  
 # Setup -------------------------------------------------------------------
 library(lubridate)
