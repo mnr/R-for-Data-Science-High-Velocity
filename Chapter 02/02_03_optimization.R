@@ -32,7 +32,6 @@ collectOneSecond <- function() {
       # )
       # scan returns a list instead of a data frame
       scan( file = HighVelSimTxt, 
-            # what = list( "loop" = 0, "time_stamp" = "", "rnorm" = "double" ),
             what = list( 0, "", "double" ),
             nmax = 1,
             fill = TRUE,
