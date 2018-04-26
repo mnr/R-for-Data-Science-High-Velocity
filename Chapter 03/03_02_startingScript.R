@@ -14,13 +14,15 @@
 # start up the high velocity data simulator
 HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the simulation data
 
+library(lubridate)
 
 # first attempt with no optimization ---------------------------------------------------------
 
 collectOneSecond <- function() {
   oneSecData <- data.frame("V1" = NA,
                            "V2" = NA,
-                           "V3" = NA)
+                           "V3" = NA,
+                           "V4" = NA)
   
   amountOfRunTime <- now() + seconds(1)
   
@@ -31,6 +33,13 @@ collectOneSecond <- function() {
         error = function(e)
           NULL
       )
+    
+    if (newData$V3 > 128 ) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
     oneSecData <- rbind(oneSecData, newData)
   }
   
