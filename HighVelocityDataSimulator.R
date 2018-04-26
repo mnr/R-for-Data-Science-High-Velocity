@@ -14,7 +14,7 @@ rowcounter <- 0
 while (TRUE) {
   writeThisLine <- data.frame(rowcounter,
                               strftime(Sys.time()),
-                              rnorm(1, mean = 128, sd = 2))
+                              rnorm(1, mean = 128, sd = 5))
   
   write.table(writeThisLine, 
               file = "HighVelocitySimulation.txt",
