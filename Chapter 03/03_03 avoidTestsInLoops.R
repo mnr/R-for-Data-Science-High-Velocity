@@ -13,24 +13,27 @@
 # setup -------------------------------------------------------------------
 # start up the high velocity data simulator
 HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
-# install.packages("readr")
-library(readr)
-install.packages("lubridate")
+
+# install.packages("data.table")
+# install.packages("profvis")
+# install.packages("lubridate")
+
+library(data.table)
 library(lubridate)
+library(profvis)
+
 
 # avoid tests in loops ---------------------------------------------------------
 
 collectOneSecond <- function() {
-  oneSecData <- data.frame("X1" = NA,
-                           "X2" = NA,
-                           "X3" = NA)
+  oneSecData <- data.frame("V1" = NA,
+                           "V2" = NA,
+                           "V3" = NA)
   
   amountOfRunTime <- now() + seconds(1)
   
   while (amountOfRunTime > now()) {
-    newData <- read_delim(HighVelSimTxt, delim = " ", 
-                          quote = '"', 
-                          col_names = FALSE)
+    newData <- fread(HighVelSimTxt)
     oneSecData <- rbind(oneSecData, newData)
   }
   
@@ -39,5 +42,5 @@ collectOneSecond <- function() {
 
 noTestInLoopData <- collectOneSecond()
 
-profvis(collectOneSecond_df())
+profvis(collectOneSecond())
 
