@@ -15,7 +15,6 @@ HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the 
 # grab one second worth of data
 
 collectOneSecond <- function() {
-  #  oneSecData <- data.frame("V1" = NA, "V2" = NA, "V3" = NA)
   # pre-allocating a list is faster than copying each time through the loop
   oneSecData <- vector(mode = "list", 10000)
   
@@ -25,11 +24,6 @@ collectOneSecond <- function() {
   
   while (amountOfRunTime > now()) {
     newData <-
-      # tryCatch(
-      #   read.table(HighVelSimTxt),
-      #   error = function(e)
-      #     NULL
-      # )
       # scan returns a list instead of a data frame
       scan( file = HighVelSimTxt, 
             what = list( 0, "", "double" ),
@@ -41,13 +35,15 @@ collectOneSecond <- function() {
     dataIDX <- dataIDX + 1
   }
   
-  return(oneSecData)
+  # remove empty elements of oneSecondOfData
+  allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
+  
+  return(allGoodData)
 }
 
-oneSecondOfData <- collectOneSecond()
+allGoodData <- collectOneSecond()
 
 # remove empty elements of oneSecondOfData
-allGoodData <- oneSecondOfData[!sapply(oneSecondOfData, is.null)]
 allGoodData_df <- data.frame(matrix(unlist(allGoodData), ncol = 3, byrow = TRUE),
                              stringsAsFactors = FALSE)
 
