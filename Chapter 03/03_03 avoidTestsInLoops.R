@@ -28,12 +28,22 @@ library(profvis)
 collectOneSecond <- function() {
   oneSecData <- data.frame("V1" = NA,
                            "V2" = NA,
-                           "V3" = NA)
+                           "V3" = NA,
+                           "V4" = NA)
   
   amountOfRunTime <- now() + seconds(1)
   
   while (amountOfRunTime > now()) {
+    # substitute fread for read.table to remove tryCatch
     newData <- fread(HighVelSimTxt)
+    
+    # I'll address this test in the next video
+    if (newData$V3 > 128 ) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
     oneSecData <- rbind(oneSecData, newData)
   }
   
