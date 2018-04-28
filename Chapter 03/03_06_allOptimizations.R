@@ -29,15 +29,19 @@ allOpt_collectOneSecond <- function() {
   
   while (amountOfRunTime > now()) {
     newData <- fread(HighVelSimTxt)
-    
-    newData$V4 <- ifelse(newData$V3 > 128, "higher", "lower")
-    
     oneSecData[[dataIDX]] <- newData
     dataIDX <- dataIDX + 1
   }
   
   # remove empty elements of oneSecondOfData
   allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
+  
+  # vectorize the creation of V4
+  allGoodData <- lapply(allGoodData, 
+                        function(x) { return(c(x$V1,
+                                               x$V2,
+                                               x$V3,
+                                               ifelse(x$V3 > 128, "higher", "lower")))})
   
   return(allGoodData)
   
