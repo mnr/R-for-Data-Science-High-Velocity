@@ -12,7 +12,7 @@
 
 # setup -------------------------------------------------------------------
 # start up the high velocity data simulator
-HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the simulation data
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
 
 library(lubridate)
 

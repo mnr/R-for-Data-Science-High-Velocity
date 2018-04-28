@@ -18,7 +18,7 @@ library(lubridate)
 
 # use ifelse instead of if...else ---------------------------------------------------------
 
-collectOneSecond <- function() {
+ifElse_collectOneSecond <- function() {
   oneSecData <- data.frame("V1" = NA,
                            "V2" = NA,
                            "V3" = NA,
@@ -44,7 +44,7 @@ collectOneSecond <- function() {
   return(oneSecData)
 }
 
-ifelseData <- collectOneSecond()
+ifelseData <- ifElse_collectOneSecond()
 
 profvis(collectOneSecond_df())
 

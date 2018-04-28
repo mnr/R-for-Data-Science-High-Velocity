@@ -9,7 +9,8 @@
 
 # Setup -------------------------------------------------------------------
 library(lubridate)
-HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the simulation file
+
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation file
 
 # Acquire -----------------------------------------------------------------
 # grab one second worth of data

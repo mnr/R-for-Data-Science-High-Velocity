@@ -25,7 +25,7 @@ library(profvis)
 
 # avoid tests in loops ---------------------------------------------------------
 
-collectOneSecond <- function() {
+noTest_collectOneSecond <- function() {
   oneSecData <- data.frame("V1" = NA,
                            "V2" = NA,
                            "V3" = NA,
@@ -50,7 +50,7 @@ collectOneSecond <- function() {
   return(oneSecData)
 }
 
-noTestInLoopData <- collectOneSecond()
+noTestInLoopData <- noTest_collectOneSecond()
 
 profvis(collectOneSecond())
 
