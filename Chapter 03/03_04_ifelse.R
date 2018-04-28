@@ -41,6 +41,11 @@ ifElse_collectOneSecond <- function() {
     oneSecData <- rbind(oneSecData, newData)
   }
   
+  # it would be better to place this outside of the loop
+  # newData$V4 <- ifelse(newData$V3 > 128,
+  #                      "higher",
+  #                      "lower")
+  
   return(oneSecData)
 }
 
