@@ -1,30 +1,273 @@
 ---
-title: "benchmarks"
+title: "R Programming in Data Science: High Velocity Data"
 author: "Mark Niemann-Ross"
 date: "4/29/2018"
 output: html_document
+
+# Copyright Mark Niemann-Ross, 2018
+# Author: Mark Niemann-Ross. mark.niemannross@gmail.com
+
 ---
+
+MNR's contact information
+[LinkedIn:](https://www.linkedin.com/in/markniemannross/)
+[Github:](https://github.com/mnr)
+[More Learning:](http://niemannross.com/link/mnratlil)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+```{r codeSetup, echo=FALSE}
+# start up the high velocity data simulator
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+library(data.table)
+library(lubridate)
+library(profvis)
+library(ggplot2)
+library(microbenchmark)
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+# starting script ---------------------------------------------------------
+The R language tries to make programming as easy as possible, but at the cost of slower performance.
 
-You can also embed plots, for example:
+There is a long list of suggested strategies to realize substantial performance improvements.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+
+
+Some of them are useful when working with high-velocity data and some are useful when working with high-volume data.
+
+
+In this chapter, let’s implement some of the high-velocity strategies and see how they affect execution speed.
+To start, I’ve created a script that accesses the high velocity data we’ve been working with.
+
+Let me show you the script and its performance.
+
+```{r startingScript}
+collectOneSecond <- function() {
+  oneSecData <- data.frame("V1" = NA,
+                           "V2" = NA,
+                           "V3" = NA,
+                           "V4" = NA)
+  
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:76 ) {
+    newData <-
+      tryCatch(
+        read.table(HighVelSimTxt),
+        error = function(e)
+          NULL
+      )
+    
+    if (newData$V3 > 128 ) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
+    oneSecData <- rbind(oneSecData, newData)
+  }
+  
+  return(oneSecData)
+}
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# avoid tests in loops ----------------------------------------------------
+Tests for conditions take time. It’s surprisingly complex to compare two variables, especially when R isn’t sure what is being compared or how to compare it.
+R is forgiving about assigning values to variables. Unlike some other languages, it will let you change the type of the variable.
+
+The cost of this flexibility is that every time R encounters a variable, it has to confirm what type it is and how to test it against another variable. 
+
+This takes time. 
+
+And that slows R down.
+Let’s take a look at ways to fix the starting script so it doesn’t have to test each time it goes through the loop.
+
+```{r avoidTestsInLoops}
+noTest_collectOneSecond <- function() {
+  oneSecData <- data.frame("V1" = NA,
+                           "V2" = NA,
+                           "V3" = NA,
+                           "V4" = NA)
+  
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:76 ) {
+    
+    # substitute fread for read.table to remove tryCatch
+    newData <- fread(HighVelSimTxt)
+    
+    # I'll address this test in the next video
+    if (newData$V3 > 128 ) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
+    oneSecData <- rbind(oneSecData, newData)
+  }
+  
+  return(oneSecData)
+}
+```
+
+# if else -----------------------------------------------------------------
+Sometimes you need to test in a loop. 
+
+In our starting script, the code adds a column with a calculated value. It does this by testing the value of one column and placing the result in the new column. This is done with a standard if...then...else test
+There are faster alternatives. Let’s look at how to optimize this.
+
+
+```{r ifElse}
+ifElse_collectOneSecond <- function() {
+  oneSecData <- data.frame("V1" = NA,
+                           "V2" = NA,
+                           "V3" = NA,
+                           "V4" = NA)
+  
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:76 ) {
+    
+    newData <-
+      tryCatch(
+        read.table(HighVelSimTxt),
+        error = function(e)
+          NULL
+      )
+    
+    newData$V4 <- ifelse(newData$V3 > 128,
+                         "higher",
+                         "lower")
+    
+    oneSecData <- rbind(oneSecData, newData)
+  }
+  
+  # it would be better to place this outside of the loop
+  # newData$V4 <- ifelse(newData$V3 > 128,
+  #                      "higher",
+  #                      "lower")
+  
+  return(oneSecData)
+}
+```
+
+# avoid copying data ------------------------------------------------------
+Earlier, we looked at the cost of appending data to an object. Let’s spend a brief moment looking at the efficiency of a pre-allocated data structure vs the efficiency of appending data.
+
+```{r avoidCopying}
+nocopy_collectOneSecond <- function() {
+  # oneSecData <- data.frame("V1" = NA,
+  #                          "V2" = NA,
+  #                          "V3" = NA,
+  #                          "V4" = NA)
+  oneSecData <- vector(mode = "list", 10000)
+  dataIDX <- 1
+  
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:76 ) {
+    
+    newData <-
+      tryCatch(
+        read.table(HighVelSimTxt),
+        error = function(e)
+          NULL
+      )
+    
+    if (newData$V3 > 128 ) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
+    # oneSecData <- rbind(oneSecData, newData)
+    oneSecData[[dataIDX]] <- newData
+    dataIDX <- dataIDX + 1
+    
+  }
+  
+  # remove empty elements of oneSecondOfData
+  allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
+  
+  return(allGoodData)
+}
+```
+
+# all optimizations -------------------------------------------------------
+
+Finally, let’s wrap all of these optimizations together to see if we’ve made any cumulative difference. 
+
+
+Let’s take a look at how this all fits together so that the data flows through the process again.
+Let’s run the starting script as a reminder
+Now let’s run the optimized version
+Some optimizations make a big difference – some don’t. Looking back over what we’ve learned, it’s important to remember to profile the code to find out what is worth optimizing and what isn’t worth our time.
+
+```{r allOptimization}
+allOpt_collectOneSecond <- function() {
+  oneSecData <- vector(mode = "list", 10000)
+  dataIDX <- 1
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:100 ) {
+    
+    newData <- fread(HighVelSimTxt)
+    oneSecData[[dataIDX]] <- newData
+    dataIDX <- dataIDX + 1
+  }
+  
+  # remove empty elements of oneSecondOfData
+  allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
+  
+  # vectorize the creation of V4
+  allGoodData <- lapply(allGoodData, 
+                        function(x) { return(c(x$V1,
+                                               x$V2,
+                                               x$V3,
+                                               ifelse(x$V3 > 128, "higher", "lower")))})
+  
+  return(allGoodData)
+  
+}
+```
+
+
+# Run the benchmark -------------------------------------------------------
+In the last video, we saw that our assumptions about code efficiency might not have been what we first assumed. 
+
+
+Microbenchmark is a package that provides a great way to quantify this. Let’s spend a brief amount of time exploring this function.
+
+```{r benchmark}
+benchmarkresults <- microbenchmark(
+  original = collectOneSecond(),
+  avoidTests = noTest_collectOneSecond(),
+  ifElse = ifElse_collectOneSecond(),
+  nocopy = nocopy_collectOneSecond(),
+  allOptimizations = allOpt_collectOneSecond()
+)
+```
+
+```{r}
+print(benchmarkresults)
+```
+
+```{r}
+boxplot(benchmarkresults)
+```
+
+```{r}
+autoplot(benchmarkresults)
+```
+
+
+
