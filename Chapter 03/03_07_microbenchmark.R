@@ -29,7 +29,7 @@ collectOneSecond <- function() {
   # amountOfRunTime <- now() + seconds(1)
   
   # while (amountOfRunTime > now()) {
-  for (i in 1:100 ) {
+  for (i in 1:76 ) {
     newData <-
       tryCatch(
         read.table(HighVelSimTxt),
@@ -59,7 +59,7 @@ noTest_collectOneSecond <- function() {
   # amountOfRunTime <- now() + seconds(1)
   
   # while (amountOfRunTime > now()) {
-  for (i in 1:100 ) {
+  for (i in 1:76 ) {
     
     # substitute fread for read.table to remove tryCatch
     newData <- fread(HighVelSimTxt)
@@ -87,7 +87,7 @@ ifElse_collectOneSecond <- function() {
   # amountOfRunTime <- now() + seconds(1)
   
   # while (amountOfRunTime > now()) {
-  for (i in 1:100 ) {
+  for (i in 1:76 ) {
     
     newData <-
       tryCatch(
@@ -123,7 +123,7 @@ nocopy_collectOneSecond <- function() {
   # amountOfRunTime <- now() + seconds(1)
   
   # while (amountOfRunTime > now()) {
-  for (i in 1:100 ) {
+  for (i in 1:76 ) {
     
     newData <-
       tryCatch(
