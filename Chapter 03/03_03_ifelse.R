@@ -27,16 +27,9 @@ ifElse_collectOneSecond <- function() {
   amountOfRunTime <- now() + seconds(1)
   
   while (amountOfRunTime > now()) {
-    newData <-
-      tryCatch(
-        read.table(HighVelSimTxt),
-        error = function(e)
-          NULL
-      )
+    newData <- read.table(HighVelSimTxt)
     
-    newData$V4 <- ifelse(newData$V3 > 128,
-           "higher",
-           "lower")
+    newData$V4 <- ifelse(newData$V3 > 128, "higher", "lower")
 
     oneSecData <- rbind(oneSecData, newData)
   }

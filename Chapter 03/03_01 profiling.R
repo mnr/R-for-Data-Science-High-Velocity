@@ -24,12 +24,7 @@ collectOneSecond_df <- function() {
   amountOfRunTime <- now() + seconds(1)
   
   while (amountOfRunTime > now()) {
-    newData <-
-      tryCatch(
-        read.table(HighVelSimTxt),
-        error = function(e)
-          NULL
-      )
+    newData <- read.table(HighVelSimTxt)
     oneSecData <- rbind(oneSecData, newData)
   }
   
@@ -51,13 +46,7 @@ collectOneSecond_opt <- function() {
   dataIDX <- 1
   
   while (amountOfRunTime > now()) {
-    newData <-
-       scan( file = HighVelSimTxt, 
-            what = list( 0, "", "double" ),
-            nmax = 1,
-            fill = TRUE,
-            quiet = TRUE
-      )
+    newData <- read.table(HighVelSimTxt)
     oneSecData[[dataIDX]] <- newData
     dataIDX <- dataIDX + 1
   }

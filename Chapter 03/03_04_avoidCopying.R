@@ -1,5 +1,4 @@
 
-
 # remarks -----------------------------------------------------------------
 
 # Copyright Mark Niemann-Ross, 2018
@@ -7,46 +6,50 @@
 # LinkedIn: https://www.linkedin.com/in/markniemannross/
 # Github: https://github.com/mnr
 # More Learning: http://niemannross.com/link/mnratlil
-# Description: R Programming in Data Science: High Velocity Data
+# Description: R Programming in Data Science: High Velocity Data 
 # Faster R for high velocity data - optimizing for high velocity data
 
 
 # setup -------------------------------------------------------------------
 # start up the high velocity data simulator
-HighVelSimTxt <-
-  "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
 
-library(data.table)
 library(lubridate)
-library(profvis)
 
-# all optimizations ---------------------------------------------------------
+# first attempt with no optimization ---------------------------------------------------------
 
-allOpt_collectOneSecond <- function() {
+nocopy_collectOneSecond <- function() {
+  # oneSecData <- data.frame("V1" = NA,
+  #                          "V2" = NA,
+  #                          "V3" = NA,
+  #                          "V4" = NA)
   oneSecData <- vector(mode = "list", 10000)
   dataIDX <- 1
+  
   amountOfRunTime <- now() + seconds(1)
   
   while (amountOfRunTime > now()) {
-    newData <- fread(HighVelSimTxt)
+    newData <- read.table(HighVelSimTxt)
+    
+    if (newData$V3 > 128 ) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
+    # oneSecData <- rbind(oneSecData, newData)
     oneSecData[[dataIDX]] <- newData
     dataIDX <- dataIDX + 1
+    
   }
   
   # remove empty elements of oneSecondOfData
   allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
   
-  # vectorize the creation of V4
-  allGoodData <- lapply(allGoodData, 
-                        function(x) { return(c(x$V1,
-                                               x$V2,
-                                               x$V3,
-                                               ifelse(x$V3 > 128, "higher", "lower")))})
-  
   return(allGoodData)
-  
 }
 
-allOpt_oneSecondOfData <- allOpt_collectOneSecond()
+nocopy_oneSecondOfData <- nocopy_collectOneSecond()
 
-profvis(allOpt_collectOneSecond())
+profvis(nocopy_collectOneSecond())
+
