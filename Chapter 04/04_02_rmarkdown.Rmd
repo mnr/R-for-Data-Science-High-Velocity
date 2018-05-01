@@ -42,23 +42,21 @@ Let me show you the script and its performance.
 
 ```{r startingScript}
 collectOneSecond <- function() {
-  oneSecData <- data.frame("V1" = NA,
-                           "V2" = NA,
-                           "V3" = NA,
-                           "V4" = NA)
+  oneSecData <- data.frame(
+    "V1" = NA,
+    "V2" = NA,
+    "V3" = NA,
+    "V4" = NA
+  )
   
   # amountOfRunTime <- now() + seconds(1)
   
   # while (amountOfRunTime > now()) {
-  for (i in 1:76 ) {
-    newData <-
-      tryCatch(
-        read.table(HighVelSimTxt),
-        error = function(e)
-          NULL
-      )
+  for (i in 1:100) {
     
-    if (newData$V3 > 128 ) {
+    newData <- read.table(HighVelSimTxt)
+    
+    if (newData$V3 > 128) {
       newData$V4 <- "higher"
     } else {
       newData$V4 <- "lower"
@@ -71,45 +69,6 @@ collectOneSecond <- function() {
 }
 ```
 
-# Avoid tests in loops
-Tests for conditions take time. It’s surprisingly complex to compare two variables, especially when R isn’t sure what is being compared or how to compare it.
-R is forgiving about assigning values to variables. Unlike some other languages, it will let you change the type of the variable.
-
-The cost of this flexibility is that every time R encounters a variable, it has to confirm what type it is and how to test it against another variable. 
-
-This takes time. 
-
-And that slows R down.
-Let’s take a look at ways to fix the starting script so it doesn’t have to test each time it goes through the loop.
-
-```{r avoidTestsInLoops}
-noTest_collectOneSecond <- function() {
-  oneSecData <- data.frame("V1" = NA,
-                           "V2" = NA,
-                           "V3" = NA,
-                           "V4" = NA)
-  
-  # amountOfRunTime <- now() + seconds(1)
-  
-  # while (amountOfRunTime > now()) {
-  for (i in 1:76 ) {
-    
-    # substitute fread for read.table to remove tryCatch
-    newData <- fread(HighVelSimTxt)
-    
-    # I'll address this test in the next video
-    if (newData$V3 > 128 ) {
-      newData$V4 <- "higher"
-    } else {
-      newData$V4 <- "lower"
-    }
-    
-    oneSecData <- rbind(oneSecData, newData)
-  }
-  
-  return(oneSecData)
-}
-```
 
 # if else
 Sometimes you need to test in a loop. 
@@ -128,18 +87,11 @@ ifElse_collectOneSecond <- function() {
   # amountOfRunTime <- now() + seconds(1)
   
   # while (amountOfRunTime > now()) {
-  for (i in 1:76 ) {
+  for (i in 1:100) {
     
-    newData <-
-      tryCatch(
-        read.table(HighVelSimTxt),
-        error = function(e)
-          NULL
-      )
+    newData <- read.table(HighVelSimTxt)
     
-    newData$V4 <- ifelse(newData$V3 > 128,
-                         "higher",
-                         "lower")
+    newData$V4 <- ifelse(newData$V3 > 128, "higher", "lower")
     
     oneSecData <- rbind(oneSecData, newData)
   }
@@ -158,24 +110,15 @@ Earlier, we looked at the cost of appending data to an object. Let’s spend a b
 
 ```{r avoidCopying}
 nocopy_collectOneSecond <- function() {
-  # oneSecData <- data.frame("V1" = NA,
-  #                          "V2" = NA,
-  #                          "V3" = NA,
-  #                          "V4" = NA)
   oneSecData <- vector(mode = "list", 10000)
   dataIDX <- 1
   
   # amountOfRunTime <- now() + seconds(1)
   
   # while (amountOfRunTime > now()) {
-  for (i in 1:76 ) {
+  for (i in 1:100) {
     
-    newData <-
-      tryCatch(
-        read.table(HighVelSimTxt),
-        error = function(e)
-          NULL
-      )
+    newData <- read.table(HighVelSimTxt)
     
     if (newData$V3 > 128 ) {
       newData$V4 <- "higher"
@@ -213,9 +156,11 @@ allOpt_collectOneSecond <- function() {
   # amountOfRunTime <- now() + seconds(1)
   
   # while (amountOfRunTime > now()) {
-  for (i in 1:100 ) {
+  for (i in 1:100) {
     
-    newData <- fread(HighVelSimTxt)
+    
+    newData <- read.table(HighVelSimTxt)
+    
     oneSecData[[dataIDX]] <- newData
     dataIDX <- dataIDX + 1
   }
@@ -244,7 +189,6 @@ Microbenchmark is a package that provides a great way to quantify this. Let’s 
 ```{r benchmark}
 benchmarkresults <- microbenchmark(
   original = collectOneSecond(),
-  avoidTests = noTest_collectOneSecond(),
   ifElse = ifElse_collectOneSecond(),
   nocopy = nocopy_collectOneSecond(),
   allOptimizations = allOpt_collectOneSecond()
