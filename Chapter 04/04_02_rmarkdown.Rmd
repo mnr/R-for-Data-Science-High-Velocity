@@ -3,7 +3,6 @@ title: 'R Programming in Data Science: High Velocity Data'
 author: "Mark Niemann-Ross"
 date: "4/29/2018"
 output:
-  pdf_document: default
   html_document: default
 ---
 
