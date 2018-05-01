@@ -1,12 +1,10 @@
 ---
-title: "R Programming in Data Science: High Velocity Data"
+title: 'R Programming in Data Science: High Velocity Data'
 author: "Mark Niemann-Ross"
 date: "4/29/2018"
-output: html_document
-
-# Copyright Mark Niemann-Ross, 2018
-# Author: Mark Niemann-Ross. mark.niemannross@gmail.com
-
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 MNR's contact information
@@ -18,7 +16,7 @@ MNR's contact information
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r codeSetup, echo=FALSE}
+```{r codeSetup, include=FALSE}
 # start up the high velocity data simulator
 HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
 
@@ -30,15 +28,12 @@ library(microbenchmark)
 
 ```
 
-# starting script ---------------------------------------------------------
+# Baseline Function
 The R language tries to make programming as easy as possible, but at the cost of slower performance.
 
 There is a long list of suggested strategies to realize substantial performance improvements.
 
-
-
 Some of them are useful when working with high-velocity data and some are useful when working with high-volume data.
-
 
 In this chapter, let’s implement some of the high-velocity strategies and see how they affect execution speed.
 To start, I’ve created a script that accesses the high velocity data we’ve been working with.
@@ -76,7 +71,7 @@ collectOneSecond <- function() {
 }
 ```
 
-# avoid tests in loops ----------------------------------------------------
+# Avoid tests in loops
 Tests for conditions take time. It’s surprisingly complex to compare two variables, especially when R isn’t sure what is being compared or how to compare it.
 R is forgiving about assigning values to variables. Unlike some other languages, it will let you change the type of the variable.
 
@@ -116,7 +111,7 @@ noTest_collectOneSecond <- function() {
 }
 ```
 
-# if else -----------------------------------------------------------------
+# if else
 Sometimes you need to test in a loop. 
 
 In our starting script, the code adds a column with a calculated value. It does this by testing the value of one column and placing the result in the new column. This is done with a standard if...then...else test
@@ -158,7 +153,7 @@ ifElse_collectOneSecond <- function() {
 }
 ```
 
-# avoid copying data ------------------------------------------------------
+# Avoid copying data
 Earlier, we looked at the cost of appending data to an object. Let’s spend a brief moment looking at the efficiency of a pre-allocated data structure vs the efficiency of appending data.
 
 ```{r avoidCopying}
@@ -201,7 +196,7 @@ nocopy_collectOneSecond <- function() {
 }
 ```
 
-# all optimizations -------------------------------------------------------
+# All optimizations 
 
 Finally, let’s wrap all of these optimizations together to see if we’ve made any cumulative difference. 
 
@@ -241,9 +236,8 @@ allOpt_collectOneSecond <- function() {
 ```
 
 
-# Run the benchmark -------------------------------------------------------
+# Run the benchmark 
 In the last video, we saw that our assumptions about code efficiency might not have been what we first assumed. 
-
 
 Microbenchmark is a package that provides a great way to quantify this. Let’s spend a brief amount of time exploring this function.
 
