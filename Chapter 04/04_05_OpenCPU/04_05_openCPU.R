@@ -15,7 +15,20 @@ install.packages("opencpu")
 library(opencpu)
 
 
-# using OpenCPU -----------------------------------------------------------
+# quick demo of OpenCPU -----------------------------------------------------------
 
 available_apps()
 ocpu_start_app("rwebapps/nabel")
+
+
+# high velocity demo ------------------------------------------------------
+
+HighVelocityOpenCPUDemo <- "mnr/R-for-Data-Science-High-Velocity/Chapter 04/04_05_OpenCPU/HighVelOpenCPU/"
+
+install_apps(HighVelocityOpenCPUDemo)
+ocpu_start_app(HighVelocityOpenCPUDemo)
+
+
+# deploy ------------------------------------------------------------------
+
+# https://www.opencpu.org/cloud
