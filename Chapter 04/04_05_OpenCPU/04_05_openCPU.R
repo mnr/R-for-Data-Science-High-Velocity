@@ -28,7 +28,11 @@ HighVelocityOpenCPUDemo <- "mnr/R-for-Data-Science-High-Velocity/Chapter 04/04_0
 install_apps(HighVelocityOpenCPUDemo)
 ocpu_start_app(HighVelocityOpenCPUDemo)
 
+---
+https://raw.githubusercontent.com/mnr/R-for-Data-Science-High-Velocity/master/DESCRIPTION
+. Repsitory does not contain a proper R package.
 
+  ---
 # deploy ------------------------------------------------------------------
 
 # https://www.opencpu.org/cloud
