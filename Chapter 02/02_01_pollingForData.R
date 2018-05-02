@@ -7,12 +7,12 @@
 
 # A demonstration of polling for data
 
-readFromHere <- "HighVelocitySimulation.txt"
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
 
 while (TRUE) {
-  if (file.exists(readFromHere)) {
+  if (file.exists(HighVelSimTxt)) {
     Sys.sleep(1) # give the simulator time to finish writing
-    dataFromPolling <- read.table(readFromHere)
+    dataFromPolling <- read.table(HighVelSimTxt)
     print(dataFromPolling)
     file.remove(readFromHere)
   }

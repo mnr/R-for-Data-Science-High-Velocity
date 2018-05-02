@@ -9,7 +9,7 @@
  
 # Setup -------------------------------------------------------------------
 library(lubridate)
-HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the simulation file
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation file
 
 # Acquire -----------------------------------------------------------------
 # grab one second worth of data
@@ -22,12 +22,7 @@ collectOneSecond <- function() {
   amountOfRunTime <- now() + seconds(1)
   
   while (amountOfRunTime > now()) {
-    newData <-
-      tryCatch(
-        read.table(HighVelSimTxt),
-        error = function(e)
-          NULL
-      )
+    newData <- read.table(HighVelSimTxt)
     oneSecData <- rbind(oneSecData, newData)
   }
   
