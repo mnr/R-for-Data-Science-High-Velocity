@@ -15,7 +15,6 @@ library(profvis)
 
 # setwd to chapter 03
 
-
 # start data simulator ----------------------------------------------------
 # start HighVelocitySimulator.R in separate R instance
 
