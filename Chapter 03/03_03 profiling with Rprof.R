@@ -11,13 +11,12 @@
 # Setup -------------------------------------------------------------------
 library(lubridate)
 
-# setwd to chapter 03
-
-
 # start data simulator ----------------------------------------------------
 # start HighVelocitySimulator.R in separate R instance
 
 HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation file
+
+# setwd to chapter 3
 
 # collectOneSecond with rbind and data frames acquire ------------------------------------------------------
 collectOneSecond_df <- function() {
