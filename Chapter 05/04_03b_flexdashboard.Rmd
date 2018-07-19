@@ -1,0 +1,345 @@
+---
+title: 'R Programming in Data Science: High Velocity Data'
+author: "Mark Niemann-Ross"
+date: "4/29/2018"
+output:
+  flexdashboard::flex_dashboard:
+    storyboard: True
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+```{r codeSetup, include=FALSE}
+# start up the high velocity data simulator
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
+
+library(data.table)
+library(lubridate)
+library(profvis)
+library(ggplot2)
+library(microbenchmark)
+
+collectOneSecond <- function() {
+  oneSecData <- data.frame(
+    "V1" = NA,
+    "V2" = NA,
+    "V3" = NA,
+    "V4" = NA
+  )
+  
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:100) {
+    
+    newData <- read.table(HighVelSimTxt)
+    
+    if (newData$V3 > 128) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
+    oneSecData <- rbind(oneSecData, newData)
+  }
+  
+  return(oneSecData)
+}
+
+ifElse_collectOneSecond <- function() {
+  oneSecData <- data.frame("V1" = NA,
+                           "V2" = NA,
+                           "V3" = NA,
+                           "V4" = NA)
+  
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:100) {
+    
+    newData <- read.table(HighVelSimTxt)
+    
+    newData$V4 <- ifelse(newData$V3 > 128, "higher", "lower")
+    
+    oneSecData <- rbind(oneSecData, newData)
+  }
+  
+  # it would be better to place this outside of the loop
+  # newData$V4 <- ifelse(newData$V3 > 128,
+  #                      "higher",
+  #                      "lower")
+  
+  return(oneSecData)
+}
+
+nocopy_collectOneSecond <- function() {
+  oneSecData <- vector(mode = "list", 10000)
+  dataIDX <- 1
+  
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:100) {
+    
+    newData <- read.table(HighVelSimTxt)
+    
+    if (newData$V3 > 128 ) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
+    # oneSecData <- rbind(oneSecData, newData)
+    oneSecData[[dataIDX]] <- newData
+    dataIDX <- dataIDX + 1
+    
+  }
+  
+  # remove empty elements of oneSecondOfData
+  allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
+  
+  return(allGoodData)
+}
+
+allOpt_collectOneSecond <- function() {
+  oneSecData <- vector(mode = "list", 10000)
+  dataIDX <- 1
+  # amountOfRunTime <- now() + seconds(1)
+  
+  # while (amountOfRunTime > now()) {
+  for (i in 1:100) {
+    
+    
+    newData <- read.table(HighVelSimTxt)
+    
+    oneSecData[[dataIDX]] <- newData
+    dataIDX <- dataIDX + 1
+  }
+  
+  # remove empty elements of oneSecondOfData
+  allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
+  
+  # vectorize the creation of V4
+  allGoodData <- lapply(allGoodData, 
+                        function(x) { return(c(x$V1,
+                                               x$V2,
+                                               x$V3,
+                                               ifelse(x$V3 > 128, "higher", "lower")))})
+  
+  return(allGoodData)
+  
+}
+
+benchmarkresults <- microbenchmark(
+  original = collectOneSecond(),
+  ifElse = ifElse_collectOneSecond(),
+  nocopy = nocopy_collectOneSecond(),
+  allOptimizations = allOpt_collectOneSecond()
+)
+
+benchmark_df <- print(benchmarkresults)
+```
+
+### Optimizing R code for High Velocity Data
+
+```{r}
+autoplot(benchmarkresults)
+```
+
+***
+The R language tries to make programming as easy as possible, but at the cost of slower performance. There are strategies for optimizing code, but this requires use of profiling tools and research. Some of these optimizations are useful when working with high-velocity data and some are useful when working with high-volume data.
+
+The graph represents the run times of four functions, each optimized in a separate way. Improved performance moves to the left of the graph. "Original" represents the unoptimized strategy.
+
+From this graph, we can make some interesting conclusions:
+
+* The "nocopy" strategy works best alone. 
+* The "ifelse" strategy provides marginal performance improvement
+
+*MNR's contact information
+[LinkedIn:](https://www.linkedin.com/in/markniemannross/)
+[Github:](https://github.com/mnr)
+[More Learning:](http://niemannross.com/link/mnratlil)*
+
+### Baseline R
+
+```
+collectOneSecond <- function() {
+  oneSecData <- data.frame(
+    "V1" = NA,
+    "V2" = NA,
+    "V3" = NA,
+    "V4" = NA
+  )
+  
+  amountOfRunTime <- now() + seconds(1)
+  
+  while (amountOfRunTime > now()) {
+    
+    newData <- read.table(HighVelSimTxt)
+    
+    if (newData$V3 > 128) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
+    oneSecData <- rbind(oneSecData, newData)
+  }
+  
+  return(oneSecData)
+}
+```
+
+***
+This is the baseline function.
+
+Performance:
+
+```{r}
+t(benchmark_df[1,2:6])
+```
+*measured in milliseconds*
+
+
+### ifelse() instead of if () {} else {} 
+
+```
+ifElse_collectOneSecond <- function() {
+  oneSecData <- data.frame("V1" = NA,
+                           "V2" = NA,
+                           "V3" = NA,
+                           "V4" = NA)
+  
+  amountOfRunTime <- now() + seconds(1)
+  
+  while (amountOfRunTime > now()) {
+    
+    newData <- read.table(HighVelSimTxt)
+    
+    newData$V4 <- ifelse(newData$V3 > 128, "higher", "lower")
+    
+    oneSecData <- rbind(oneSecData, newData)
+  }
+  
+  return(oneSecData)
+}
+```
+***
+It's preferable to test outside of a loop, but with high-velocity data, sometimes it's necessary. In our starting script, the code adds a column with a calculated value. It does this by testing the value of one column and placing the result in the new column. This is done with a standard if...then...else test
+
+This version of the optimization substitutes ifelse() for the if...else statement.
+
+Unfortunately, this does not produce any significant optimization.
+
+Performance:
+
+```{r}
+t(benchmark_df[2,2:6])
+```
+*measured in milliseconds*
+
+### Preassigned data structure
+
+```
+nocopy_collectOneSecond <- function() {
+  oneSecData <- vector(mode = "list", 10000)
+  dataIDX <- 1
+  
+  amountOfRunTime <- now() + seconds(1)
+  
+  while (amountOfRunTime > now()) {
+    
+    newData <- read.table(HighVelSimTxt)
+    
+    if (newData$V3 > 128 ) {
+      newData$V4 <- "higher"
+    } else {
+      newData$V4 <- "lower"
+    }
+    
+    oneSecData[[dataIDX]] <- newData
+    dataIDX <- dataIDX + 1
+    
+  }
+  
+  # remove empty elements of oneSecondOfData
+  allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
+  
+  return(allGoodData)
+}
+```
+
+***
+When R assigns a value to an existing data structure, it first creates a copy of the data structure. Since this involves memory management, this process is expensive.
+
+Therefore, appending data to a structure, such as rbind, is not the fastest way to capture data. Instead, it is much faster to pre-allocate a data structure, then change members of that existing structure.
+
+Performance:
+
+```{r}
+t(benchmark_df[3,2:6])
+```
+*measured in milliseconds*
+
+
+### The result of all optimizations
+
+```
+allOpt_collectOneSecond <- function() {
+  oneSecData <- vector(mode = "list", 10000)
+  dataIDX <- 1
+
+  amountOfRunTime <- now() + seconds(1)
+  
+  while (amountOfRunTime > now()) {
+  
+    newData <- read.table(HighVelSimTxt)
+    
+    oneSecData[[dataIDX]] <- newData
+    dataIDX <- dataIDX + 1
+  }
+  
+  # remove empty elements of oneSecondOfData
+  allGoodData <- oneSecData[!sapply(oneSecData, is.null)]
+  
+  # vectorize the creation of V4
+  allGoodData <- lapply(allGoodData, 
+                        function(x) { return(c(x$V1,
+                                               x$V2,
+                                               x$V3,
+                                               ifelse(x$V3 > 128, "higher", "lower")))})
+  
+  return(allGoodData)
+  
+}
+```
+
+***
+This code combines all optimization strategies, but is hampered by the poor performance of ifelse.
+
+Performance:
+
+```{r}
+t(benchmark_df[4,2:6])
+```
+*measured in milliseconds*
+
+
+### The benchmarks as a table
+
+```{r}
+options(width = 80)
+print(benchmarkresults)
+```
+
+### The benchmarks as a boxplot
+
+```{r}
+boxplot(benchmarkresults)
+```
+
+
+
