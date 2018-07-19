@@ -1,0 +1,33 @@
+Notes on Near Real Time demonstration.
+
+This demo is somewhat complex and involves a bit of set up. You'll need to start the high velocity simulator, start another process to build the SQLite database, and start a third R program to gather data from the SQLite database.
+
+I assume the following folder/file structure:
+
+Exercise Files
+- HighVelocityDataSimulator.R
+- HighVelocitySimulation.txt
+- Chapter 01
+-- 01_06_NRT_processing.R
+-- acquisition.R
+
+1) Open a new instance of R. Typically this is done by opening a terminal window and starting R (or in windows, starting a new Rgui).
+
+2) setwd() to "Exercise Files"
+
+3) Start HighVelocityDataSimulator.R . This program should be in the root level of the Exercise Files folder. This will begin updating HighVelocitySimulation.txt, overwriting the previous data in this file. This simulates high velocity data as might be pulled from a hardware register.
+
+4) Open another new instance of R. Typically this is done by opening a terminal window and starting R (or in windows, starting a new Rgui).
+
+5) setwd() to "Exercise Files / Chapter 01"
+
+6) Start acquisition.R . This will create a file titled AcquisitionDB.SQLite. If you see path errors, check the pathname assigned to HighVelSimTxt. It should point to HighVelocitySimulation.txt
+
+7) Open yet another new instance of R. Typically this is done by opening a terminal window and starting R (or in windows, starting a new Rgui).
+
+8) setwd() to "Exercise Files / Chapter 01"
+
+9) start 01_06_NRT_processing.R. This will write to the console, something along the line of "With 13 observations, the mean of V3 is 137"
+
+10) Viola - you are demonstrating near real time processing!
+
