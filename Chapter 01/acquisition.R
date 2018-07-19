@@ -8,7 +8,7 @@
 # An example of real-time data acquisition
 
 # Setup -------------------------------------------------------------------
-HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the simulation file
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation file
 
 # import necessary libraries
 list.of.packages <- c("DBI","RSQLite")
