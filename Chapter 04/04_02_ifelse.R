@@ -12,11 +12,12 @@
 
 # setup -------------------------------------------------------------------
 # don't forget to start up the high velocity data simulator
-HighVelSimTxt <- "HighVelocitySimulation.txt" # set this to the pathname of the simulation data
+HighVelSimTxt <- "../HighVelocitySimulation.txt" # set this to the pathname of the simulation data
 
 # setwd to chapter 4
 
 library(lubridate)
+library(profvis)
 
 # use ifelse instead of if...else ---------------------------------------------------------
 
@@ -46,5 +47,5 @@ ifElse_collectOneSecond <- function() {
 
 ifelseData <- ifElse_collectOneSecond()
 
-profvis(collectOneSecond_df())
+profvis(ifElse_collectOneSecond())
 
