@@ -14,6 +14,8 @@ rowcounter <- 0
 HSDtmpFile <- "tempSim.txt"
 HSDFinalFile <- "HighVelocitySimulation.txt"
 
+RunningOnWindows <- startsWith(version$os,"ming") # TRUE if OS is windows
+  
 while (TRUE) {
   writeThisLine <- data.frame(rowcounter,
                               strftime(Sys.time()),
@@ -25,7 +27,7 @@ while (TRUE) {
               col.names = FALSE,
               row.names = FALSE)
   
-  if (startsWith(version$os,"ming")) file.remove(HSDFinalFile)
+  if (RunningOnWindows) file.remove(HSDFinalFile)
   
   file.rename(from = HSDtmpFile, to = HSDFinalFile) 
   
