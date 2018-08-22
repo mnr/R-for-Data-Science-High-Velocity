@@ -62,8 +62,8 @@ There is a long list of suggested strategies to realize substantial performance 
 
 Some of them are useful when working with high-velocity data and some are useful when working with high-volume data.
 
-In this chapter, let’s implement some of the high-velocity strategies and see how they affect execution speed.
-To start, I’ve created a script that accesses the high velocity data we’ve been working with.
+In this chapter, let's implement some of the high-velocity strategies and see how they affect execution speed.
+To start, I've created a script that accesses the high velocity data we've been working with.
 
 Let me show you the script and its performance.
 
@@ -101,7 +101,7 @@ ifElse_collectOneSecond <- function() {
 Sometimes you need to test in a loop. 
 
 In our starting script, the code adds a column with a calculated value. It does this by testing the value of one column and placing the result in the new column. This is done with a standard if...then...else test
-There are faster alternatives. Let’s look at how to optimize this.
+There are faster alternatives. Let's look at how to optimize this.
 
 ### Avoid copying data
 
@@ -137,7 +137,7 @@ nocopy_collectOneSecond <- function() {
 ```
 
 ***
-Earlier, we looked at the cost of appending data to an object. Let’s spend a brief moment looking at the efficiency of a pre-allocated data structure vs the efficiency of appending data.
+Earlier, we looked at the cost of appending data to an object. Let's spend a brief moment looking at the efficiency of a pre-allocated data structure vs the efficiency of appending data.
 
 ### All optimizations 
 
@@ -173,13 +173,13 @@ allOpt_collectOneSecond <- function() {
 ```
 
 ***
-Finally, let’s wrap all of these optimizations together to see if we’ve made any cumulative difference. 
+Finally, let's wrap all of these optimizations together to see if we've made any cumulative difference. 
 
 
-Let’s take a look at how this all fits together so that the data flows through the process again.
-Let’s run the starting script as a reminder
-Now let’s run the optimized version
-Some optimizations make a big difference – some don’t. Looking back over what we’ve learned, it’s important to remember to profile the code to find out what is worth optimizing and what isn’t worth our time.
+Let's take a look at how this all fits together so that the data flows through the process again.
+Let's run the starting script as a reminder
+Now let's run the optimized version
+Some optimizations make a big difference - some don't. Looking back over what we've learned, it's important to remember to profile the code to find out what is worth optimizing and what isn't worth our time.
 
 ### Run the benchmark 
 
@@ -195,7 +195,7 @@ benchmarkresults <- microbenchmark(
 ***
 In the last video, we saw that our assumptions about code efficiency might not have been what we first assumed. 
 
-Microbenchmark is a package that provides a great way to quantify this. Let’s spend a brief amount of time exploring this function.
+Microbenchmark is a package that provides a great way to quantify this. Let's spend a brief amount of time exploring this function.
 
 ### The benchmarks as a table
 
