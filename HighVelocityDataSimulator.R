@@ -25,7 +25,7 @@ while (TRUE) {
               col.names = FALSE,
               row.names = FALSE)
   
-  if (startsWith(version$platform,"ming")) file.remove(HSDFinalFile)
+  if (startsWith(version$os,"ming")) file.remove(HSDFinalFile)
   
   file.rename(from = HSDtmpFile, to = HSDFinalFile) 
   
