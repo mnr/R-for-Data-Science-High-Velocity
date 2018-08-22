@@ -9,7 +9,10 @@
 
 
 # Setup -------------------------------------------------------------------
-library(lubridate)
+# install.packages("tidyverse")
+library(tidyverse) # if you haven't already
+# install.packages("microbenchmark")
+library(microbenchmark)
 
 # setwd to chapter 03
 
