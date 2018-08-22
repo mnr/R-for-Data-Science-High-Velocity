@@ -30,5 +30,10 @@ Exercise Files
 
 9) start 01_08_RT_processing.R. This will create a JSON file titled "meanOfV3.json"
 
-10) Open 01_08_RT_presentation.html in a browser. Push the button to retrieve the JSON file and display the results.
+10) setwd() to "Exercise Files / Chapter 01"
+
+11) Open -a firefox 01_08_RT_presentation.html
+
+12) Push the button to retrieve the JSON file and display the results.
+
 
