@@ -22,19 +22,21 @@ library(rjson)
 mySQLiteDB <- dbConnect(RSQLite::SQLite(), "AcquisitionDB.SQLite")
 
 # processing --------------------------------------------------------------
-doThisSQL <- " SELECT avg(V3), max(V1) FROM 'Acquired Data' "
 
-dataRead <- dbGetQuery(mySQLiteDB, doThisSQL)
+while (TRUE) {
+   doThisSQL <- " SELECT avg(V3), max(V1) FROM 'Acquired Data' "
 
-JSON_representation <- toJSON( dataRead )
+   dataRead <- dbGetQuery(mySQLiteDB, doThisSQL)
 
-write(JSON_representation, file = "meanOfV3.json")
+   JSON_representation <- toJSON( dataRead )
 
-doThisSQL <- " DELETE FROM 'Acquired Data' WHERE V3 < :maxRow "
-myDBIResult <- dbSendQuery(mySQLiteDB, doThisSQL )
-dbBind(myDBIResult, list( maxRow = dataRead[[2]] ) )
-dbFetch(myDBIResult)
+   write(JSON_representation, file = "meanOfV3.json")
 
+   # doThisSQL <- " DELETE FROM 'Acquired Data' WHERE V3 < :maxRow "
+   # myDBIResult <- dbSendQuery(mySQLiteDB, doThisSQL )
+   # dbBind(myDBIResult, list( maxRow = dataRead[[2]] ) )
+   # dbFetch(myDBIResult)
+}
 # Clean up ----------------------------------------------------------------
 
 dbDisconnect(mySQLiteDB)

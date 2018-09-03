@@ -1,0 +1,41 @@
+Notes on Real Time demonstration.
+
+Procedure for Windows.
+
+This demo is somewhat complex and involves a bit of set up. You'll need to start the high velocity simulator, start another process to build the SQLite database, and start a third R program to gather data from the SQLite database.
+
+I assume the following folder/file structure:
+
+Exercise Files
+- HighVelocityDataSimulator.R
+- HighVelocitySimulation.txt
+- Chapter 01
+-- 01_08_RT_processing.R
+-- 01_08_RT_presentation.html
+-- acquisition.R
+
+1) Open a new instance of R. Typically this is done by starting a new Rgui from the windows menu.
+
+2) setwd() to "Exercise Files"
+
+3) Load and Start HighVelocityDataSimulator.R . This program should be in the root level of the Exercise Files folder. This will begin updating HighVelocitySimulation.txt, overwriting the previous data in this file. This simulates high velocity data as might be pulled from a hardware register.
+
+4) Open another new instance of R. Typically this is done by opening a terminal window and starting R (or in windows, starting a new Rgui).
+
+5) setwd() to "Exercise Files / Chapter 01"
+
+6) Open and "run all" acquisition.R . This will create a file titled AcquisitionDB.SQLite. If you see path errors, check the pathname assigned to HighVelSimTxt. It should point to HighVelocitySimulation.txt
+
+7) Open yet another new instance of R. Typically this is done by opening a terminal window and starting R (or in windows, starting a new Rgui).
+
+8) setwd() to "Exercise Files / Chapter 01"
+
+9) start 01_08_RT_processing.R. This will create a JSON file titled "meanOfV3.json"
+
+10) setwd() to "Exercise Files / Chapter 01"
+
+11) Open firefox, then open 01_08_RT_presentation.html. Check to make sure you aren't receiving a cross-browser error.
+
+12) Push the button to retrieve the JSON file and display the results.
+
+
